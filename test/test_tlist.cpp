@@ -7,6 +7,24 @@ TEST(TDynamicList, can_create)
 	ASSERT_NO_THROW(TDynamicList<int> list);
 }
 
+TEST(TDynamicList, can_assign)
+{
+	TDynamicList<int> list;
+	list.push_front(58);
+	list.push_front(85);
+	TDynamicList<int> tmp;
+	ASSERT_NO_THROW(tmp = list);
+}
+
+TEST(TDynamicList, can_assign_himself)
+{
+	TDynamicList<int> list;
+	list.push_front(58);
+	list.push_front(85);
+	ASSERT_NO_THROW(list = list);
+}
+
+
 TEST(TDynamicList, can_check_empty)
 {
 	TDynamicList<int> list;
