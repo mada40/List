@@ -92,6 +92,17 @@ public:
 		sz++;
 	}
 
+	void pop_front()
+	{
+		if(!first)
+			throw std::logic_error("list is empty");
+
+		TNode* tmp = first->next;
+		delete first;
+		first = tmp;
+		sz--;
+	}
+
 	void erase_after(TNode* node)
 	{
 		if(!node || !node->next)
@@ -100,7 +111,9 @@ public:
 		TNode* er_el = node->next;
 		node->next = er_el ? er_el->next : nullptr;
 		delete er_el;
+		sz--;
 	}
+
 
 	void insert_after(TNode* node, const T& value)
 	{
@@ -116,6 +129,7 @@ public:
 		TNode* tmp = node->next;
 		node->next = new TNode(value);
 		node->next->next = tmp;	
+		sz++;
 	}
 
 
