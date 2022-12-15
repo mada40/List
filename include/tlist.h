@@ -8,10 +8,12 @@ class TDynamicList
 {
 
 private:
+	
 	struct TNode
 	{
-		T value;
 		TNode* next = nullptr;
+	public:
+		T value;
 		TNode(const T& _value)
 		{
 			next = nullptr;
@@ -19,12 +21,40 @@ private:
 		}
 	};
 
+	
+
+
 	TNode* first = nullptr;
 	TNode* last = nullptr;
 	size_t sz;
 
 public:
 
+	struct iterator
+	{
+		TNode* node;
+
+		iterator() = default;
+		iterator(TNode* _node)
+		{
+			node = _node;
+		}
+
+		bool operator ==(const iterator& it) { return node == it.node; }
+		bool operator !=(const iterator& it) { return node != it.node; }
+		iterator& operator ++()
+		{
+			if (!node)
+				throw std::logic_error("out of range");
+			node = node->next;
+			return *this;
+		}
+
+		T operator*() { return node->value; }
+	};
+
+	iterator begin() { return iterator(first); }
+	iterator end() { return iterator(nullptr); }
 	void clear() noexcept
 	{
 		while (first)
@@ -103,8 +133,9 @@ public:
 		sz--;
 	}
 
-	void erase_after(TNode* node)
+	void erase_after(const iterator& it)
 	{
+		TNode* node = it.node;
 		if(!node || !node->next)
 			throw std::logic_error("invalid node");
 
@@ -115,8 +146,9 @@ public:
 	}
 
 
-	void insert_after(TNode* node, const T& value)
+	void insert_after(const iterator& it, const T& value)
 	{
+		TNode* node = it.node;
 		if (!node)
 			throw std::logic_error("invalid node");
 
