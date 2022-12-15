@@ -139,7 +139,7 @@ public:
 		{
 			return *this;
 		}
-		TDynamicList(other) tmp;
+		TDynamicList<int> tmp(other);
 		swap(*this, tmp);
 		return *this;
 	}
