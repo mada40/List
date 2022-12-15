@@ -53,7 +53,7 @@ TEST(TDynamicList, can_insert_after_first)
 {
 	TDynamicList<int> list;
 	list.push_back(5);
-	ASSERT_NO_THROW(list.insert_after(list.front(), 78));
+	ASSERT_NO_THROW(list.insert_after(list.begin(), 78));
 }
 
 TEST(TDynamicList, can_return_front)
@@ -61,7 +61,7 @@ TEST(TDynamicList, can_return_front)
 	TDynamicList<int> list;
 	list.push_back(5);
 	list.push_back(7);
-	EXPECT_EQ(list.front()->value, 5);
+	EXPECT_EQ(*list.begin(), 5);
 }
 
 TEST(TDynamicList, can_return_back)
@@ -78,7 +78,7 @@ TEST(TDynamicList, can_erase_after_first)
 	TDynamicList<int> list;
 	list.push_back(5);
 	list.push_back(15);
-	ASSERT_NO_THROW(list.erase_after(list.front()));
+	ASSERT_NO_THROW(list.erase_after(list.begin()));
 }
 
 TEST(TDynamicList, can_erase_after_node)
@@ -118,13 +118,12 @@ TEST(TDynamicList, erase_after_node_deletes_node)
 	control.push(15);
 	control.push(85);
 
-	auto first = list.front();
-	while (first)
+	for (auto el : list)
 	{
-		EXPECT_EQ(first->value, control.front());
+		EXPECT_EQ(el, control.front());
 		control.pop();
-		first = first->next;
 	}
+
 }
 
 
@@ -145,13 +144,12 @@ TEST(TDynamicList, insert_after_node_adds_node)
 	control.push(35);
 	control.push(85);
 
-	auto first = list.front();
-	while (first)
+	for (auto el : list)
 	{
-		EXPECT_EQ(first->value, control.front());
+		EXPECT_EQ(el, control.front());
 		control.pop();
-		first = first->next;
 	}
+
 }
 
 TEST(TDynamicList, can_pop_front)
@@ -159,4 +157,65 @@ TEST(TDynamicList, can_pop_front)
 	TDynamicList<int> list;
 	list.push_back(5);
 	ASSERT_NO_THROW(list.pop_front());
+}
+
+class FixtureForCreateLoop : public ::testing::Test
+{
+	public:
+		TDynamicList<int> list;
+		TDynamicList<int>::iterator begin_loop;
+		TDynamicList<int>::iterator next_after_begin_loop;
+		FixtureForCreateLoop()
+		{
+			const int N = 100;
+			for (int i = 0; i < N; i++)
+			{
+				list.push_back(i * i - 2287);
+				if (i == 78)
+					begin_loop = TDynamicList<int>::iterator(list.back());
+				if (i == 79)
+					next_after_begin_loop = TDynamicList<int>::iterator(list.back());
+			}
+
+			begin_loop.node->next = list.front();
+		}
+
+		void TearDown() override {
+			begin_loop.node->next = next_after_begin_loop.node;
+		}
+};
+
+TEST_F(FixtureForCreateLoop, search_loop1)
+{
+	int cnt = 0;
+	bool haveLoop = false;
+	for (auto el : list)
+	{
+		cnt++;
+		if (cnt > list.size())
+		{
+			haveLoop = true;
+			break;
+		}
+	}
+
+	EXPECT_EQ(haveLoop, true);
+}
+
+TEST_F(FixtureForCreateLoop, search_loop2)
+{
+	int cnt = 0;
+	bool haveLoop = false;
+	begin_loop.node->next = next_after_begin_loop.node;
+	for (auto el : list)
+	{
+		cnt++;
+		if (cnt > list.size())
+		{
+			haveLoop = true;
+			break;
+		}
+	}
+
+	EXPECT_EQ(haveLoop, false);
 }
