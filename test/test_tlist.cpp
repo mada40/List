@@ -69,7 +69,7 @@ TEST(TDynamicList, can_return_back)
 	TDynamicList<int> list;
 	list.push_back(5);
 	list.push_back(7);
-	EXPECT_EQ(list.back()->value, 7);
+	EXPECT_EQ(*list.back(), 7);
 }
 
 
@@ -172,12 +172,26 @@ class FixtureForCreateLoop : public ::testing::Test
 			{
 				list.push_back(i * i - 2287);
 				if (i == 78)
-					begin_loop = TDynamicList<int>::iterator(list.back());
+					begin_loop = list.back();
 				if (i == 79)
-					next_after_begin_loop = TDynamicList<int>::iterator(list.back());
+					next_after_begin_loop = list.back();
 			}
 
-			begin_loop.node->next = list.front();
+			begin_loop.node->next = list.begin().node;
+		}
+
+		bool haveLoop()
+		{
+			auto ptr1 = list.begin();
+			auto ptr2 = list.begin();
+			auto end = list.end();
+			++ptr2; ++ptr2;
+			while (ptr1 != end && ptr2 != end && ptr1 != ptr2)
+			{
+				++ptr1;
+				++ptr2; ++ptr2;
+			}
+			return ptr1 == ptr2;
 		}
 
 		void TearDown() override {
@@ -187,35 +201,11 @@ class FixtureForCreateLoop : public ::testing::Test
 
 TEST_F(FixtureForCreateLoop, search_loop1)
 {
-	int cnt = 0;
-	bool haveLoop = false;
-	for (auto el : list)
-	{
-		cnt++;
-		if (cnt > list.size())
-		{
-			haveLoop = true;
-			break;
-		}
-	}
-
-	EXPECT_EQ(haveLoop, true);
+	EXPECT_EQ(haveLoop(), true);
 }
 
 TEST_F(FixtureForCreateLoop, search_loop2)
 {
-	int cnt = 0;
-	bool haveLoop = false;
 	begin_loop.node->next = next_after_begin_loop.node;
-	for (auto el : list)
-	{
-		cnt++;
-		if (cnt > list.size())
-		{
-			haveLoop = true;
-			break;
-		}
-	}
-
-	EXPECT_EQ(haveLoop, false);
+	EXPECT_EQ(haveLoop(), false);
 }
