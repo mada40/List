@@ -33,7 +33,6 @@ public:
 	struct iterator
 	{
 		TNode* node;
-
 		iterator() = default;
 		iterator(TNode* _node)
 		{
@@ -55,6 +54,7 @@ public:
 
 	iterator begin() { return iterator(first); }
 	iterator end() { return iterator(nullptr); }
+	iterator back() const noexcept { return iterator(last); }
 	void clear() noexcept
 	{
 		while (first)
@@ -68,8 +68,6 @@ public:
 	}
 
 	~TDynamicList() noexcept { clear(); }
-	TNode* front()  const noexcept { return first; }
-	TNode* back() const noexcept { return last; }
 	size_t size() const noexcept { return sz; }
 	bool empty() const noexcept { return sz == 0; }
 
