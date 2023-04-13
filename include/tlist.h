@@ -46,7 +46,7 @@ public:
 	List(const List& other);
 	~List() noexcept { clear(); }
 	List& operator= (const List& other);
-	List&& operator= (List&& other) { swap_lists(*this, other); return *this; }
+	List&& operator= (List&& other) noexcept { swap_lists(*this, other); return *this; }
 
 	bool empty() const noexcept { return sz == 0; }
 	size_t size() const noexcept { return sz; }
@@ -98,12 +98,19 @@ inline void List<T>::clear() noexcept
 template<typename T>
 inline void List<T>::remove(const T& value)
 {
-	TNode cur = first;
-	while (first)
+	TNode* cur = first;
+	while (cur)
 	{
-		if(first->next && first->next->value == value)
-			erase_after()
+		if (cur->next && cur->next->value == value)
+			erase_after_node(cur);
+
+		cur = cur->next;
 	}
+}
+
+template<typename T>
+inline void List<T>::reverse()
+{
 }
 
 template<typename T>
