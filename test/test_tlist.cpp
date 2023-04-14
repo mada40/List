@@ -4,21 +4,21 @@
 
 TEST(TDynamicList, can_create)
 {
-	ASSERT_NO_THROW(TDynamicList<int> list);
+	ASSERT_NO_THROW(List<int> list);
 }
 
 TEST(TDynamicList, can_assign)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	list.push_front(58);
 	list.push_front(85);
-	TDynamicList<int> tmp;
+	List<int> tmp;
 	ASSERT_NO_THROW(tmp = list);
 }
 
 TEST(TDynamicList, can_assign_himself)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	list.push_front(58);
 	list.push_front(85);
 	ASSERT_NO_THROW(list = list);
@@ -27,100 +27,167 @@ TEST(TDynamicList, can_assign_himself)
 
 TEST(TDynamicList, can_check_empty)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	EXPECT_EQ(list.empty(), true);
 }
 
 TEST(TDynamicList, can_create_copy)
 {
-	TDynamicList<int> list;
-	ASSERT_NO_THROW(TDynamicList<int> list2(list));
+	List<int> list;
+	ASSERT_NO_THROW(List<int> list2(list));
 }
 
 TEST(TDynamicList, can_push_front)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	ASSERT_NO_THROW(list.push_front(5));
 }
 
 TEST(TDynamicList, can_push_back)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	ASSERT_NO_THROW(list.push_back(5));
 }
 
 TEST(TDynamicList, can_insert_after_first)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	list.push_back(5);
 	ASSERT_NO_THROW(list.insert_after(list.begin(), 78));
 }
 
 TEST(TDynamicList, can_return_front)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	list.push_back(5);
 	list.push_back(7);
-	EXPECT_EQ(*list.begin(), 5);
+	EXPECT_EQ(list.front(), 5);
 }
 
 TEST(TDynamicList, can_return_back)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	list.push_back(5);
 	list.push_back(7);
-	EXPECT_EQ(*list.back(), 7);
+	EXPECT_EQ(list.back(), 7);
 }
 
 
 TEST(TDynamicList, can_erase_after_first)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	list.push_back(5);
 	list.push_back(15);
 	ASSERT_NO_THROW(list.erase_after(list.begin()));
 }
 
-TEST(TDynamicList, can_erase_after_node)
+TEST(TDynamicList, can_resize1)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	list.push_back(5);
 	list.push_back(15);
-	auto tmp = list.back();
-	list.push_back(35);
-	list.push_back(85);
+	auto b = list.begin();
+	ASSERT_NO_THROW(list.resize(5));
+}
+
+TEST(TDynamicList, can_resize2)
+{
+	List<int> list;
+	list.push_back(5);
+	list.push_back(15);
+	list.push_back(15);
+	list.push_back(115);
+	list.push_back(25);
+	list.push_back(215);
+	ASSERT_NO_THROW(list.resize(3));
+}
+
+TEST(TDynamicList, can_remove)
+{
+	List<int> list;
+	list.push_back(5);
+	list.push_back(15);
+	list.push_back(15);
+	list.push_back(5);
+	list.push_back(25);
+	list.push_back(5);
+	ASSERT_NO_THROW(list.remove(5));
+}
+
+TEST(TDynamicList, can_reverse)
+{
+	List<int> list;
+	list.push_back(1);
+	list.push_back(2);
+	list.push_back(3);
+	list.push_back(4);
+	list.push_back(5);
+	list.reverse();
+	int cnt = 5;
+
+	for (auto x : list)
+	{
+		EXPECT_EQ(x, cnt);
+		cnt--;
+	}
+}
+
+TEST(TDynamicList, can_move)
+{
+	List<int> list;
+	list.push_back(1);
+	list.push_back(2);
+	list.push_back(3);
+	list.push_back(4);
+	list.push_back(5);
+	list.reverse();
+	EXPECT_NO_THROW(auto tmp = std::move(list));
+}
+
+
+TEST(TDynamicList, can_erase_after_node)
+{
+	List<int> list;
+	list.push_back(5);
+	list.push_back(15);
+	auto tmp = list.begin();
+	list.push_front(35);
+	list.push_front(85);
 	ASSERT_NO_THROW(list.erase_after(tmp));
 }
 
 TEST(TDynamicList, can_insert_after_node)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	list.push_back(5);
 	list.push_back(15);
-	auto tmp = list.back();
-	list.push_back(35);
-	list.push_back(85);
+	auto tmp = list.begin();
+	list.push_front(35);
+	list.push_front(85);
 	ASSERT_NO_THROW(list.insert_after(tmp, 666));
 }
 
 TEST(TDynamicList, erase_after_node_deletes_node)
 {
-	TDynamicList<int> list;
-	list.push_back(5);
-	list.push_back(15);
-	auto tmp = list.back();
-	list.push_back(35);
-	list.push_back(85);
-	list.erase_after(tmp);
+	List<int> list;
+	list.push_back(5);//5
+	list.push_back(15);//5 15
+	list.push_back(25);//5 15 25
+	auto tmp = list.begin();
+	list.push_front(35);// 35 5 15 25
+	list.push_front(85);//85 35 5 15 25
+	list.erase_after(tmp);//delete 15 : 85 35 5 25
 
 	std::queue<int> control;
-	control.push(5);
-	control.push(15);
 	control.push(85);
+	control.push(35);
+	control.push(5);
+	control.push(25);
 
 	for (auto el : list)
 	{
-		EXPECT_EQ(el, control.front());
+		int y = control.front();
+		EXPECT_EQ(el, y);
 		control.pop();
 	}
 
@@ -129,20 +196,22 @@ TEST(TDynamicList, erase_after_node_deletes_node)
 
 TEST(TDynamicList, insert_after_node_adds_node)
 {
-	TDynamicList<int> list;
-	list.push_back(5);
-	list.push_back(15);
-	auto tmp = list.back();
-	list.push_back(35);
-	list.push_back(85);
-	list.insert_after(tmp, 666);
+	List<int> list;
+	list.push_back(5);//5
+	list.push_back(15);//5 15
+	list.push_back(25);//5 15 25
+	auto tmp = list.begin();
+	list.push_front(35);// 35 5 15 25
+	list.push_front(85);//85 35 5 15 25
+	list.insert_after(tmp, 666); // 85 35 5 666 15 25
 
 	std::queue<int> control;
-	control.push(5);
-	control.push(15);
-	control.push(666);
-	control.push(35);
 	control.push(85);
+	control.push(35);
+	control.push(5);
+	control.push(666);
+	control.push(15);
+	control.push(25);
 
 	for (auto el : list)
 	{
@@ -154,58 +223,8 @@ TEST(TDynamicList, insert_after_node_adds_node)
 
 TEST(TDynamicList, can_pop_front)
 {
-	TDynamicList<int> list;
+	List<int> list;
 	list.push_back(5);
 	ASSERT_NO_THROW(list.pop_front());
 }
 
-class FixtureForCreateLoop : public ::testing::Test
-{
-	public:
-		TDynamicList<int> list;
-		TDynamicList<int>::iterator begin_loop;
-		TDynamicList<int>::iterator next_after_begin_loop;
-		FixtureForCreateLoop()
-		{
-			const int N = 100;
-			for (int i = 0; i < N; i++)
-			{
-				list.push_back(i * i - 2287);
-				if (i == 78)
-					begin_loop = list.back();
-				if (i == 79)
-					next_after_begin_loop = list.back();
-			}
-
-			begin_loop.node->next = list.begin().node;
-		}
-
-		bool haveLoop()
-		{
-			auto ptr1 = list.begin();
-			auto ptr2 = list.begin();
-			auto end = list.end();
-			++ptr2; ++ptr2;
-			while (ptr1 != end && ptr2 != end && ptr1 != ptr2)
-			{
-				++ptr1;
-				++ptr2; ++ptr2;
-			}
-			return ptr1 == ptr2;
-		}
-
-		void TearDown() override {
-			begin_loop.node->next = next_after_begin_loop.node;
-		}
-};
-
-TEST_F(FixtureForCreateLoop, search_loop1)
-{
-	EXPECT_EQ(haveLoop(), true);
-}
-
-TEST_F(FixtureForCreateLoop, search_loop2)
-{
-	begin_loop.node->next = next_after_begin_loop.node;
-	EXPECT_EQ(haveLoop(), false);
-}
