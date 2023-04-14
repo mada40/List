@@ -9,17 +9,15 @@
 template<typename T>
 class List
 {
-
 private:
-	
+
 	struct TNode
 	{
 		TNode* next = nullptr;
 		T value;
-		TNode(const T& _value) : next(nullptr), value(_value){}
+		TNode(const T& _value) : next(nullptr), value(_value) {}
 	};
 
-	
 	TNode* first = nullptr;
 	TNode* last = nullptr;
 	size_t sz = 0;
@@ -34,35 +32,34 @@ public:
 		TNode* node;
 		iterator() = default;
 		iterator(const iterator& other) = default;
-		iterator(TNode* _node) noexcept {	node = _node; }
+		iterator(TNode* _node) noexcept { node = _node; }
 
 		bool operator ==(const iterator& it) { return node == it.node; }
 		bool operator !=(const iterator& it) { return node != it.node; }
-		T operator*() { return node->value; }
+		T& operator*() { return node->value; }
 		iterator& operator ++();
 	};
 
 	List() : first(nullptr), last(nullptr), sz(0) {}
 	List(const List& other);
+	List(List&& other) : first(nullptr), last(nullptr), sz(0) {swap_lists(*this, other);}
 	~List() noexcept { clear(); }
 	List& operator= (const List& other);
-	List&& operator= (List&& other) noexcept { swap_lists(*this, other); return *this; }
+	List& operator= (List&& other);
 
 	bool empty() const noexcept { return sz == 0; }
 	size_t size() const noexcept { return sz; }
 	T& front() noexcept { if (!first) throw std::logic_error("list is empty"); return first->value; }
 	void push_front(const T& v);
 	void pop_front();
-	void resize(size_t new_size, const T& value = T());
+	void resize(size_t new_size);
 	void clear() noexcept;
 	void  remove(const T& value);
 	void reverse();
 
-
 	iterator begin() { return iterator(first); }
 	iterator end() { return iterator(nullptr); }
 	T& back() noexcept { if (!first) throw std::logic_error("list is empty"); return last->value; }
-
 
 	void push_back(const T& v);
 	void erase_after(const iterator& it) { erase_after_node(it.node); }
@@ -81,7 +78,6 @@ inline typename List<T>::iterator& List<T>::iterator::operator++()
 	return *this;
 }
 
-
 template<typename T>
 inline void List<T>::clear() noexcept
 {
@@ -93,6 +89,7 @@ inline void List<T>::clear() noexcept
 	}
 	sz = 0;
 	last = nullptr;
+	first = nullptr;
 }
 
 template<typename T>
@@ -111,6 +108,16 @@ inline void List<T>::remove(const T& value)
 template<typename T>
 inline void List<T>::reverse()
 {
+	List<T> tmp;
+	TNode* cur = first;
+	while (cur)
+	{
+		T x = cur->value;
+		tmp.push_front(x);
+		cur = cur->next;
+	}
+
+	swap_lists(*this, tmp);
 }
 
 template<typename T>
@@ -151,15 +158,14 @@ inline void List<T>::pop_front()
 }
 
 template<typename T>
-inline void List<T>::resize(size_t new_size, const T& value)
+inline void List<T>::resize(size_t new_size)
 {
 	while (new_size > sz)
-		push_back(value);
+		push_back(T());
 
 	while (new_size < sz)
 		pop_front();
 }
-
 
 template<typename T>
 inline List<T>& List<T>::operator=(const List& other)
@@ -171,6 +177,17 @@ inline List<T>& List<T>::operator=(const List& other)
 	swap_lists(*this, tmp);
 	return *this;
 }
+
+template<typename T>
+inline List<T>& List<T>::operator=(List&& other)
+{
+	if (this == &other)
+		return *this;
+
+	clear();
+	swap_lists(*this, other);
+}
+
 template<typename T>
 inline void List<T>::erase_after_node(TNode* node)
 {
@@ -182,6 +199,7 @@ inline void List<T>::erase_after_node(TNode* node)
 	delete er_el;
 	sz--;
 }
+
 template<typename T>
 inline void List<T>::insert_after_node(TNode* node, const T& value)
 {
@@ -199,9 +217,9 @@ inline void List<T>::insert_after_node(TNode* node, const T& value)
 	node->next->next = tmp;
 	sz++;
 }
-template<typename T>
 
-inline List<T>::List(const List& other)
+template<typename T>
+inline List<T>::List(const List& other) : first(nullptr), last(nullptr), sz(0)
 {
 	TNode* tmp_first = other.first;
 	while (tmp_first)
@@ -218,6 +236,4 @@ inline void swap_lists(List<T2>& l1, List<T2>& l2) noexcept
 	std::swap(l1.last, l2.last);
 	std::swap(l1.sz, l2.sz);
 }
-
-
 #endif
