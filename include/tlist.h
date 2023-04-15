@@ -190,6 +190,7 @@ inline List<T>& List<T>::operator=(List&& other)
 
 	clear();
 	swap_lists(*this, other);
+	return *this;
 }
 
 template<typename T>
