@@ -59,6 +59,12 @@ TEST(TDynamicList, can_create)
 	ASSERT_NO_THROW(List<int> list);
 }
 
+TEST_F(Fixture, can_clear)
+{
+	ASSERT_NO_THROW(list.clear());
+}
+
+
 TEST_F(Fixture, can_assign)
 {
 	List<int> tmp;
