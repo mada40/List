@@ -162,12 +162,23 @@ TEST_F(Fixture, correct_reverse)
 	EXPECT_TRUE(compare_with_control(list));
 }
 
-TEST_F(Fixture, can_move)
+TEST_F(Fixture, move_constructor_no_throw)
 {
 	EXPECT_NO_THROW(auto tmp = std::move(list));
 }
 
-TEST_F(Fixture, correct_move)
+TEST_F(Fixture, move_assigment_no_throw)
+{
+	List<int> tmp;
+	EXPECT_NO_THROW(tmp = std::move(list));
+}
+
+TEST_F(Fixture, correct_move_constructor)
+{
+	EXPECT_NO_THROW(compare_with_control(std::move(list)));
+}
+
+TEST_F(Fixture, correct_move_assigmaent)
 {
 	List<int> tmp;
 	tmp = std::move(list);
