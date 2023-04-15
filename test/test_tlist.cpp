@@ -37,6 +37,8 @@ public:
 		control.push_front(35);
 		control.push_front(85);
 		control.push_front(5);
+
+		//5 85 35 5 15 25 5
 	}
 
 	bool compare_with_control(List<int> lt)
@@ -110,6 +112,12 @@ TEST(TDynamicList, can_push_front)
 	ASSERT_NO_THROW(list.push_front(5));
 }
 
+TEST_F(Fixture, coorect_push_front)
+{
+	list.push_front(999);
+	control.push_front(999);
+	EXPECT_TRUE(compare_with_control(list));
+}
 TEST(TDynamicList, can_push_back)
 {
 	List<int> list;
@@ -123,38 +131,50 @@ TEST(TDynamicList, can_insert_after_first)
 	ASSERT_NO_THROW(list.insert_after(list.begin(), 78));
 }
 
-TEST(TDynamicList, can_return_front)
+TEST_F(Fixture, correct_front)
 {
-	List<int> list;
-	list.push_back(5);
-	list.push_back(7);
-	EXPECT_EQ(list.front(), 5);
+	EXPECT_EQ(list.front(), control.front());
 }
 
-TEST(TDynamicList, can_return_back)
+TEST(TDynamicList, correct_back)
 {
 	List<int> list;
-	list.push_back(5);
-	list.push_back(7);
-	EXPECT_EQ(list.back(), 7);
+	list.push_back(50);
+	list.push_back(100);
+	EXPECT_EQ(list.back(), 100);
 }
 
-TEST(TDynamicList, can_erase_after_first)
+TEST_F(Fixture, can_erase_after_first)
 {
-	List<int> list;
-	list.push_back(5);
-	list.push_back(15);
-	ASSERT_NO_THROW(list.erase_after(list.begin()));
+	ASSERT_NO_THROW(list.erase_after(center));
 }
 
-TEST_F(Fixture, can_resize1)
+TEST_F(Fixture, can_reduce_size)
+{
+	ASSERT_NO_THROW(list.resize(1));
+}
+
+TEST_F(Fixture, can_increase_size)
 {
 	ASSERT_NO_THROW(list.resize(50));
 }
 
-TEST_F(Fixture, can_resize2)
+TEST_F(Fixture, coorect_reduce_size)
 {
-	ASSERT_NO_THROW(list.resize(1));
+	list.resize(2);
+	control.reverse();
+	control.resize(2);
+	control.reverse();
+	EXPECT_TRUE(compare_with_control(list));
+}
+
+TEST_F(Fixture, coorect_increase_size)
+{
+	list.resize(50);
+	control.reverse();
+	control.resize(50);
+	control.reverse();
+	EXPECT_TRUE(compare_with_control(list));
 }
 
 TEST_F(Fixture, can_remove)
@@ -232,5 +252,12 @@ TEST(TDynamicList, can_pop_front)
 	List<int> list;
 	list.push_back(5);
 	ASSERT_NO_THROW(list.pop_front());
+}
+
+TEST_F(Fixture, coorect_pop_front)
+{
+	list.pop_front();
+	control.pop_front();
+	EXPECT_TRUE(compare_with_control(list));
 }
 
