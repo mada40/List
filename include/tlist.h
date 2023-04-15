@@ -165,7 +165,7 @@ template<typename T>
 inline void List<T>::resize(size_t new_size)
 {
 	while (new_size > sz)
-		push_back(T());
+		push_front(T());
 
 	while (new_size < sz)
 		pop_front();
