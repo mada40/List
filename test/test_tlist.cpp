@@ -1,29 +1,87 @@
 #include "tlist.h"
 #include <gtest.h>
 #include <queue>
+#include <forward_list>
+
+class Fixture : public ::testing::Test
+{
+public:
+	List<int> list;
+	List<int>::iterator center;
+
+	std::forward_list<int> control;
+
+	std::forward_list<int>::iterator center_control;
+	const int REMOVE_EL = 5;
+
+	Fixture()
+	{
+		list = List<int>();
+		list.push_back(5);
+		list.push_back(15);
+		list.push_back(25);
+		list.push_back(5);
+
+		center = list.begin();
+
+		list.push_front(35);
+		list.push_front(85);
+		list.push_front(5);
+
+
+		control = std::forward_list<int>();
+		control.push_front(5);
+		control.push_front(15);
+		control.push_front(25);
+		control.push_front(5);
+
+		control.reverse();
+		center_control = control.begin();
+
+		control.push_front(35);
+		control.push_front(85);
+		control.push_front(5);
+	}
+
+	bool compare_with_control(List<int> lt)
+	{
+		while (!control.empty() && !lt.empty())
+		{
+			int x = lt.front(); lt.pop_front();
+			int y = control.front(); control.pop_front();
+			if (x != y)
+				return false;
+		}
+
+		return control.empty() && lt.empty();
+	}
+};
+
 
 TEST(TDynamicList, can_create)
 {
 	ASSERT_NO_THROW(List<int> list);
 }
 
-TEST(TDynamicList, can_assign)
+TEST_F(Fixture, can_assign)
 {
-	List<int> list;
-	list.push_front(58);
-	list.push_front(85);
 	List<int> tmp;
 	ASSERT_NO_THROW(tmp = list);
 }
 
-TEST(TDynamicList, can_assign_himself)
+TEST_F(Fixture, size_of_assigned_list_equl_size_of_init_list)
 {
-	List<int> list;
-	list.push_front(58);
-	list.push_front(85);
-	ASSERT_NO_THROW(list = list);
+	List<int> tmp;
+	tmp = list;
+	EXPECT_EQ(list.size(), tmp.size());
+	
 }
 
+TEST_F(Fixture, can_assign_himself)
+{
+	List<int> list;
+	ASSERT_NO_THROW(list = list);
+}
 
 TEST(TDynamicList, can_check_empty)
 {
@@ -31,21 +89,18 @@ TEST(TDynamicList, can_check_empty)
 	EXPECT_EQ(list.empty(), true);
 }
 
-TEST(TDynamicList, can_create_copy)
+TEST_F(Fixture, can_create_copy)
 {
-	List<int> list;
 	ASSERT_NO_THROW(List<int> list2(list));
 }
 
-TEST(TDynamicList, can_push_front)
+TEST_F(Fixture, can_push_front)
 {
-	List<int> list;
 	ASSERT_NO_THROW(list.push_front(5));
 }
 
-TEST(TDynamicList, can_push_back)
+TEST_F(Fixture, can_push_back)
 {
-	List<int> list;
 	ASSERT_NO_THROW(list.push_back(5));
 }
 
@@ -72,7 +127,6 @@ TEST(TDynamicList, can_return_back)
 	EXPECT_EQ(list.back(), 7);
 }
 
-
 TEST(TDynamicList, can_erase_after_first)
 {
 	List<int> list;
@@ -81,144 +135,72 @@ TEST(TDynamicList, can_erase_after_first)
 	ASSERT_NO_THROW(list.erase_after(list.begin()));
 }
 
-TEST(TDynamicList, can_resize1)
+TEST_F(Fixture, can_resize1)
 {
-	List<int> list;
-	list.push_back(5);
-	list.push_back(15);
-	auto b = list.begin();
-	ASSERT_NO_THROW(list.resize(5));
+	ASSERT_NO_THROW(list.resize(50));
 }
 
-TEST(TDynamicList, can_resize2)
+TEST_F(Fixture, can_resize2)
 {
-	List<int> list;
-	list.push_back(5);
-	list.push_back(15);
-	list.push_back(15);
-	list.push_back(115);
-	list.push_back(25);
-	list.push_back(215);
-	ASSERT_NO_THROW(list.resize(3));
+	ASSERT_NO_THROW(list.resize(1));
 }
 
-TEST(TDynamicList, can_remove)
+TEST_F(Fixture, can_remove)
 {
-	List<int> list;
-	list.push_back(5);
-	list.push_back(15);
-	list.push_back(15);
-	list.push_back(5);
-	list.push_back(25);
-	list.push_back(5);
-	ASSERT_NO_THROW(list.remove(5));
+	ASSERT_NO_THROW(list.remove(REMOVE_EL));
 }
 
-TEST(TDynamicList, can_reverse)
+TEST_F(Fixture, correct_remove)
 {
-	List<int> list;
-	list.push_back(1);
-	list.push_back(2);
-	list.push_back(3);
-	list.push_back(4);
-	list.push_back(5);
+	list.remove(REMOVE_EL);
+	control.remove(REMOVE_EL);
+	EXPECT_TRUE(compare_with_control(list));
+}
+
+TEST_F(Fixture, correct_reverse)
+{
 	list.reverse();
-	int cnt = 5;
-
-	for (auto x : list)
-	{
-		EXPECT_EQ(x, cnt);
-		cnt--;
-	}
+	control.reverse();
+	EXPECT_TRUE(compare_with_control(list));
 }
 
-TEST(TDynamicList, can_move)
+TEST_F(Fixture, can_move)
 {
-	List<int> list;
-	list.push_back(1);
-	list.push_back(2);
-	list.push_back(3);
-	list.push_back(4);
-	list.push_back(5);
-	list.reverse();
 	EXPECT_NO_THROW(auto tmp = std::move(list));
 }
 
-
-TEST(TDynamicList, can_erase_after_node)
+TEST_F(Fixture, correct_move)
 {
-	List<int> list;
-	list.push_back(5);
-	list.push_back(15);
-	auto tmp = list.begin();
-	list.push_front(35);
-	list.push_front(85);
-	ASSERT_NO_THROW(list.erase_after(tmp));
-}
-
-TEST(TDynamicList, can_insert_after_node)
-{
-	List<int> list;
-	list.push_back(5);
-	list.push_back(15);
-	auto tmp = list.begin();
-	list.push_front(35);
-	list.push_front(85);
-	ASSERT_NO_THROW(list.insert_after(tmp, 666));
-}
-
-TEST(TDynamicList, erase_after_node_deletes_node)
-{
-	List<int> list;
-	list.push_back(5);//5
-	list.push_back(15);//5 15
-	list.push_back(25);//5 15 25
-	auto tmp = list.begin();
-	list.push_front(35);// 35 5 15 25
-	list.push_front(85);//85 35 5 15 25
-	list.erase_after(tmp);//delete 15 : 85 35 5 25
-
-	std::queue<int> control;
-	control.push(85);
-	control.push(35);
-	control.push(5);
-	control.push(25);
-
-	for (auto el : list)
-	{
-		int y = control.front();
-		EXPECT_EQ(el, y);
-		control.pop();
-	}
-
+	List<int> tmp;
+	tmp = std::move(list);
+	EXPECT_NO_THROW(compare_with_control(tmp));
 }
 
 
-TEST(TDynamicList, insert_after_node_adds_node)
+TEST_F(Fixture, can_erase_after)
 {
-	List<int> list;
-	list.push_back(5);//5
-	list.push_back(15);//5 15
-	list.push_back(25);//5 15 25
-	auto tmp = list.begin();
-	list.push_front(35);// 35 5 15 25
-	list.push_front(85);//85 35 5 15 25
-	list.insert_after(tmp, 666); // 85 35 5 666 15 25
+	ASSERT_NO_THROW(list.erase_after(center));
+}
 
-	std::queue<int> control;
-	control.push(85);
-	control.push(35);
-	control.push(5);
-	control.push(666);
-	control.push(15);
-	control.push(25);
+TEST_F(Fixture, can_insert_after)
+{
+	ASSERT_NO_THROW(list.insert_after(center, 666));
+}
 
-	for (auto el : list)
-	{
-		EXPECT_EQ(el, control.front());
-		control.pop();
-	}
+TEST_F(Fixture, correct_erase_after)
+{
+	list.erase_after(center);
+	control.erase_after(center_control);
+	EXPECT_TRUE(compare_with_control(list));
 
+}
+
+TEST_F(Fixture, correct_insert_after)
+{
+
+	list.insert_after(center, 666);
+	control.insert_after(center_control, 666);
+	EXPECT_TRUE(compare_with_control(list));
 }
 
 TEST(TDynamicList, can_pop_front)
