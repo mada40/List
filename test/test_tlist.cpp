@@ -13,9 +13,8 @@ public:
 	std::forward_list<int>::iterator center_control;
 	const int REMOVE_EL = 5;
 
-	Fixture()
+	Fixture() :list(List<int>()), control(std::forward_list<int>())
 	{
-		list = List<int>();
 		list.push_back(5);
 		list.push_back(15);
 		list.push_back(25);
@@ -27,8 +26,6 @@ public:
 		list.push_front(85);
 		list.push_front(5);
 
-
-		control = std::forward_list<int>();
 		control.push_front(5);
 		control.push_front(15);
 		control.push_front(25);
