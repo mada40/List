@@ -1,6 +1,5 @@
 #include "tlist.h"
 #include <gtest.h>
-#include <queue>
 #include <forward_list>
 
 class Fixture : public ::testing::Test
@@ -94,13 +93,15 @@ TEST_F(Fixture, can_create_copy)
 	ASSERT_NO_THROW(List<int> list2(list));
 }
 
-TEST_F(Fixture, can_push_front)
+TEST(TDynamicList, can_push_front)
 {
+	List<int> list;
 	ASSERT_NO_THROW(list.push_front(5));
 }
 
-TEST_F(Fixture, can_push_back)
+TEST(TDynamicList, can_push_back)
 {
+	List<int> list;
 	ASSERT_NO_THROW(list.push_back(5));
 }
 
