@@ -81,10 +81,11 @@ inline typename List<T>::iterator& List<T>::iterator::operator++()
 template<typename T>
 inline void List<T>::clear() noexcept
 {
-	while (first)
+	TNode* cur = first;
+	while (cur)
 	{
-		TNode* temp = first;
-		first = first->next;
+		TNode* temp = cur;
+		cur = cur->next;
 		delete temp;
 	}
 	sz = 0;
