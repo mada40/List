@@ -42,7 +42,7 @@ public:
 
 	List() : first(nullptr), last(nullptr), sz(0) {}
 	List(const List& other);
-	List(List&& other) : first(nullptr), last(nullptr), sz(0) {swap_lists(*this, other);}
+	List(List&& other) noexcept : first(nullptr), last(nullptr), sz(0) {swap_lists(*this, other);}
 	~List() noexcept { clear(); }
 	List& operator= (const List& other);
 	List& operator= (List&& other);
@@ -95,6 +95,9 @@ inline void List<T>::clear() noexcept
 template<typename T>
 inline void List<T>::remove(const T& value)
 {
+	if (first->value == value)
+		pop_front();
+
 	TNode* cur = first;
 	while (cur)
 	{
