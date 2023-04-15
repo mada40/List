@@ -176,6 +176,7 @@ TEST_F(Fixture, move_constructor_no_throw)
 TEST_F(Fixture, move_assigment_no_throw)
 {
 	List<int> tmp;
+	tmp.push_back(5);
 	EXPECT_NO_THROW(tmp = std::move(list));
 }
 
