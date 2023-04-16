@@ -11,24 +11,29 @@ public:
 	std::forward_list<int> control;
 
 	std::forward_list<int>::iterator center_control;
-	const int REMOVE_EL = 5;
+	const int REMOVE_EL_FIRST = -9;
+	const int REMOVE_EL_ADJACENT = 25;
 
 	Fixture() :list(List<int>()), control(std::forward_list<int>())
 	{
 		list.push_back(5);
 		list.push_back(15);
-		list.push_back(25);
+		list.push_back(REMOVE_EL_ADJACENT);
+		list.push_back(REMOVE_EL_ADJACENT);
+		list.push_back(REMOVE_EL_ADJACENT);
 		list.push_back(5);
 
 		center = list.begin();
 
 		list.push_front(35);
 		list.push_front(85);
-		list.push_front(5);
+		list.push_front(REMOVE_EL_FIRST);
 
 		control.push_front(5);
 		control.push_front(15);
-		control.push_front(25);
+		control.push_front(REMOVE_EL_ADJACENT);
+		control.push_front(REMOVE_EL_ADJACENT);
+		control.push_front(REMOVE_EL_ADJACENT);
 		control.push_front(5);
 
 		control.reverse();
@@ -36,9 +41,8 @@ public:
 
 		control.push_front(35);
 		control.push_front(85);
-		control.push_front(5);
+		control.push_front(REMOVE_EL_FIRST);
 
-		//5 85 35 5 15 25 5
 	}
 
 	bool compare_with_control(List<int> lt)
@@ -179,13 +183,20 @@ TEST_F(Fixture, coorect_increase_size)
 
 TEST_F(Fixture, can_remove)
 {
-	ASSERT_NO_THROW(list.remove(REMOVE_EL));
+	ASSERT_NO_THROW(list.remove(REMOVE_EL_FIRST));
 }
 
-TEST_F(Fixture, correct_remove)
+TEST_F(Fixture, correct_remove_first)
 {
-	list.remove(REMOVE_EL);
-	control.remove(REMOVE_EL);
+	list.remove(REMOVE_EL_FIRST);
+	control.remove(REMOVE_EL_FIRST);
+	EXPECT_TRUE(compare_with_control(list));
+}
+
+TEST_F(Fixture, correct_remove_adjacent)
+{
+	list.remove(REMOVE_EL_ADJACENT);
+	control.remove(REMOVE_EL_ADJACENT);
 	EXPECT_TRUE(compare_with_control(list));
 }
 
@@ -194,6 +205,18 @@ TEST_F(Fixture, correct_reverse)
 	list.reverse();
 	control.reverse();
 	EXPECT_TRUE(compare_with_control(list));
+}
+
+TEST(TDynamicList, correct_remove_in_a_list_of_identical_elements)
+{
+	List<int> l;
+	int N = 5;
+	int el = -80;
+	for (int i = 0; i < N; i++)
+		l.push_back(el);
+
+	l.remove(el);
+	EXPECT_TRUE(l.empty());
 }
 
 TEST_F(Fixture, move_constructor_no_throw)
