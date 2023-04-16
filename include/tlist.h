@@ -1,5 +1,6 @@
 ﻿//MAKHINYA DANIL 
 //2023
+//task_summer_school_2023
 #ifndef __TDynamicList_H__
 #define __TDynamicList_H__
 
@@ -65,6 +66,8 @@ public:
 	void erase_after(const iterator& it) { erase_after_node(it.node); }
 	void insert_after(const iterator& it, const T& value) { insert_after_node(it.node, value); }
 	
+
+	//function, which swaps the contents of two linked lists
 	template<typename T2>
 	friend void swap_lists(List<T2>& l1, List<T2>& l2) noexcept;
 };
