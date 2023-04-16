@@ -99,13 +99,14 @@ inline void List<T>::clear() noexcept
 template<typename T>
 inline void List<T>::remove(const T& value)
 {
-	if (first->value == value)
+
+	while(first && first->value == value)
 		pop_front();
 
 	TNode* cur = first;
 	while (cur)
 	{
-		if (cur->next && cur->next->value == value)
+		while (cur->next && cur->next->value == value)
 			erase_after_node(cur);
 
 		cur = cur->next;
